@@ -26,6 +26,14 @@ type EpisodeProps = {
 }
 
 export default function Episode({ episode } : EpisodeProps) {
+  const router = useRouter();
+
+  /* Devemos utilizar essa condição somente quando a página for renderizada no browser
+  if(router.isFallback){
+    return <p>Carregando...</p>
+  }
+ */
+
   return(
     <div className={styles.episode}>
       <div className={styles.thumbnailContainer}>
@@ -61,13 +69,39 @@ export default function Episode({ episode } : EpisodeProps) {
   )
 }
 
+/* Obrigatório o uso quando a página está usando GetStaticProps e utilizando parâmetros */
 export const getStaticPaths: GetStaticPaths = async () => {
+
+  const { data } = await api.get('episodes',
+  {
+    params: {
+      _limit: 2,
+      _sort: 'published_at',
+      _order: 'desc'
+    }
+  })
+
+  const paths = data.map(episode => {
+    return {
+      params: { 
+        slug: episode.id
+      }
+    }
+  })
+
   return {
-    paths: [],
+    paths,
+    /*
+    false -> Carrega somente as páginas estáticas informadas no "paths" diferente disso retorna 404
+    Incremental static generation
+    true -> Carrega as páginas no browser (client)
+    'blocking' -> Carrega as páginas no servidor (next.js) node-js e exibe as páginas no browser somente quando tiver pronta (SEO)
+    */
     fallback: 'blocking'
   }
 }
 
+/* Páginas estáticas só funcionam compilados pois são geradas no momento da build */
 export const getStaticProps: GetStaticProps = async (ctx) => {
   const { slug } = ctx.params;
 
