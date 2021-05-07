@@ -1,12 +1,12 @@
-import { GetStaticPaths, GetStaticProps } from 'next';
-import { useRouter } from 'next/router'
-import { format, parseISO } from 'date-fns';
-import ptBR from 'date-fns/locale/pt-BR';
-import { api } from '../../services/api';
-import { convertDurationToTimeString } from '../../utils/convertDurationToTimeString';
-import Image from 'next/image';
-import Link from 'next/link';
-import styles from './episode.module.scss';
+import { GetStaticPaths, GetStaticProps } from "next";
+import { useRouter } from "next/router";
+import { format, parseISO } from "date-fns";
+import ptBR from "date-fns/locale/pt-BR";
+import { api } from "../../services/api";
+import { convertDurationToTimeString } from "../../utils/convertDurationToTimeString";
+import Image from "next/image";
+import Link from "next/link";
+import styles from "./episode.module.scss";
 
 /* IMPORTANTE- Legal sempre deixarmos os types o mais próximo possível das páginas, pois são o que serão exibidos, não reaproveitar a estrutura */
 type Episode = {
@@ -16,16 +16,16 @@ type Episode = {
   description: string;
   members: string;
   duration: number;
-  durationAsString: string,
+  durationAsString: string;
   url: string;
   publishedAt: string;
-}
+};
 
 type EpisodeProps = {
   episode: Episode;
-}
+};
 
-export default function Episode({ episode } : EpisodeProps) {
+export default function Episode({ episode }: EpisodeProps) {
   const router = useRouter();
 
   /* Devemos utilizar essa condição somente quando a página for renderizada no browser
@@ -34,15 +34,15 @@ export default function Episode({ episode } : EpisodeProps) {
   }
  */
 
-  return(
+  return (
     <div className={styles.episode}>
       <div className={styles.thumbnailContainer}>
-        <Link href='/'>
+        <Link href="/">
           <button>
-            <img src="/arrow-left.svg" alt="Voltar"/>
+            <img src="/arrow-left.svg" alt="Voltar" />
           </button>
         </Link>
-        <Image 
+        <Image
           width={700}
           height={160}
           src={episode.thumbnail}
@@ -50,7 +50,7 @@ export default function Episode({ episode } : EpisodeProps) {
           objectFit="cover"
         />
         <button>
-          <img src="/play.svg" alt="Tocar episódio"/>
+          <img src="/play.svg" alt="Tocar episódio" />
         </button>
       </div>
       <header>
@@ -60,34 +60,31 @@ export default function Episode({ episode } : EpisodeProps) {
         <span>{episode.durationAsString}</span>
       </header>
 
-      <div 
-        className={styles.description} 
-        dangerouslySetInnerHTML={{__html: episode.description}}
+      <div
+        className={styles.description}
+        dangerouslySetInnerHTML={{ __html: episode.description }}
       />
     </div>
-
-  )
+  );
 }
 
 /* Obrigatório o uso quando a página está usando GetStaticProps e utilizando parâmetros */
 export const getStaticPaths: GetStaticPaths = async () => {
-
-  const { data } = await api.get('episodes',
-  {
+  const { data } = await api.get("episodes", {
     params: {
       _limit: 2,
-      _sort: 'published_at',
-      _order: 'desc'
-    }
-  })
+      _sort: "published_at",
+      _order: "desc",
+    },
+  });
 
-  const paths = data.map(episode => {
+  const paths = data.map((episode) => {
     return {
-      params: { 
-        slug: episode.id
-      }
-    }
-  })
+      params: {
+        slug: episode.id,
+      },
+    };
+  });
 
   return {
     paths,
@@ -97,9 +94,9 @@ export const getStaticPaths: GetStaticPaths = async () => {
     true -> Carrega as páginas no browser (client)
     'blocking' -> Carrega as páginas no servidor (next.js) node-js e exibe as páginas no browser somente quando tiver pronta (SEO)
     */
-    fallback: 'blocking'
-  }
-}
+    fallback: "blocking",
+  };
+};
 
 /* Páginas estáticas só funcionam compilados pois são geradas no momento da build */
 export const getStaticProps: GetStaticProps = async (ctx) => {
@@ -112,15 +109,17 @@ export const getStaticProps: GetStaticProps = async (ctx) => {
     title: data.title,
     thumbnail: data.thumbnail,
     members: data.members,
-    publishedAt: format(parseISO(data.published_at), 'd MMM yy', {locale: ptBR}),
+    publishedAt: format(parseISO(data.published_at), "d MMM yy", {
+      locale: ptBR,
+    }),
     duration: Number(data.file.duration),
     durationAsString: convertDurationToTimeString(Number(data.file.duration)),
     description: data.description,
-    url: data.file.url,  
-  }
+    url: data.file.url,
+  };
 
-  return { 
+  return {
     props: { episode },
     revalidate: 60 * 60 * 24, // 24 hours
-  }
-}
+  };
+};

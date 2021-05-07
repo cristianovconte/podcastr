@@ -7,9 +7,7 @@
     "build": "next build",
     "start": "next start",
     "server": "json-server server.json -w -d 750 -p 3333",
-    "lint": "eslint \"src/**/*.+(ts|js|tsx)\"",
     "format": "prettier \"src/**/*.+(ts|js|tsx)\" --write"
-
   },
   "dependencies": {
     "axios": "^0.21.1",
@@ -26,6 +24,7 @@
     "husky": "^6.0.0",
     "json-server": "^0.16.3",
     "lint-staged": "^11.0.0",
+    "prettier": "^2.2.1",
     "typescript": "^4.2.4"
   },
   "husky": {
@@ -33,7 +32,7 @@
       "pre-commit": "lint-staged"
     }
   },
-  "link-staged": {
+  "lint-staged": {
     "./src/**/*.{ts,js,jsx,tsx}": [
       "yarn lint --fix",
       "yarn format"
