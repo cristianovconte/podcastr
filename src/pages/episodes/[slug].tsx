@@ -7,6 +7,8 @@ import { convertDurationToTimeString } from "../../utils/convertDurationToTimeSt
 import Image from "next/image";
 import Link from "next/link";
 import styles from "./episode.module.scss";
+import { usePlayer } from "../../contexts/PlayerContext";
+
 
 /* IMPORTANTE- Legal sempre deixarmos os types o mais próximo possível das páginas, pois são o que serão exibidos, não reaproveitar a estrutura */
 type Episode = {
@@ -27,6 +29,7 @@ type EpisodeProps = {
 
 export default function Episode({ episode }: EpisodeProps) {
   const router = useRouter();
+  const { play } = usePlayer();
 
   /* Devemos utilizar essa condição somente quando a página for renderizada no browser
   if(router.isFallback){
@@ -49,7 +52,7 @@ export default function Episode({ episode }: EpisodeProps) {
           alt={episode.title}
           objectFit="cover"
         />
-        <button>
+        <button type="button" onClick={() => play(episode)}>
           <img src="/play.svg" alt="Tocar episódio" />
         </button>
       </div>
