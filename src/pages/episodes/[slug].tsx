@@ -8,7 +8,7 @@ import Image from "next/image";
 import Link from "next/link";
 import styles from "./episode.module.scss";
 import { usePlayer } from "../../contexts/PlayerContext";
-
+import Head from "next/head";
 
 /* IMPORTANTE- Legal sempre deixarmos os types o mais próximo possível das páginas, pois são o que serão exibidos, não reaproveitar a estrutura */
 type Episode = {
@@ -39,6 +39,9 @@ export default function Episode({ episode }: EpisodeProps) {
 
   return (
     <div className={styles.episode}>
+      <Head>
+        <title>{episode.title} | Podcastr</title>
+      </Head>
       <div className={styles.thumbnailContainer}>
         <Link href="/">
           <button>
